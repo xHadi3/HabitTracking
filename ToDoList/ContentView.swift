@@ -8,17 +8,32 @@
 import SwiftUI
 
 struct ContentView: View {
+    @State private var showingSheet = false
+    @State private var activityList = ActivityList()
     var body: some View {
+        NavigationStack{
         VStack {
-            Image(systemName: "globe")
-                .imageScale(.large)
-                .foregroundStyle(.tint)
-            Text("Hello, world!")
+            List($activityList.activities){ $activity in
+                    NavigationLink(activity.name){
+                        descriptionView(activity: $activity)
+                }
+            }
+            Button("add"){
+                showingSheet.toggle()
+                
+            }
         }
-        .padding()
+       
+        .navigationTitle("Track Your Habits")
+        .sheet(isPresented: $showingSheet){
+            addActivity(activityList: activityList)
+        }
+        }
     }
 }
 
 #Preview {
     ContentView()
 }
+
+
