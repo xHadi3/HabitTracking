@@ -8,8 +8,25 @@
 import Foundation
 
 @Observable
-class ActivityList {
-    var activities : [Activity] = []
+class ActivityList : Codable{
+    var activities : [Activity]{
+        didSet{
+            if let encoded = try? JSONEncoder().encode(activities){
+                UserDefaults.standard.set(encoded, forKey:"Activities" )
+            }
+        }
+    }
+    
+    init() {
+        if let savedActivities = UserDefaults.standard.data(forKey: "Activities"){
+            if let decodedItems = try? JSONDecoder().decode([Activity].self, from: savedActivities){
+                activities = decodedItems
+                return
+            }
+        }
+        activities = []
+    }
+    
     
     func addActivity(activity:Activity){
         activities.append(activity)
@@ -17,7 +34,7 @@ class ActivityList {
     
 }
 
-struct Activity : Identifiable{
+struct Activity : Identifiable, Codable{
     let id : UUID = UUID()
     let name: String
     let description: String
